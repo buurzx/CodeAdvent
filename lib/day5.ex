@@ -41,9 +41,13 @@ defmodule Day5 do
   """
   def find_problematic(polymer) do
     ?A..?Z
-    |> Task.async_stream(fn letter ->
-      {letter, byte_size(discard_and_react(polymer, letter, letter + 32))}
-    end)
+    |> Task.async_stream(
+      fn letter ->
+        {letter, byte_size(discard_and_react(polymer, letter, letter + 32))}
+      end,
+      ordered: false,
+      max_concurrency: 26
+    )
     |> Stream.map(fn {:ok, res} -> res end)
     |> Enum.min_by(&elem(&1, 1))
   end
